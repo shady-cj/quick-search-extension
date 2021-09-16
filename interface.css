@@ -1,0 +1,76 @@
+.target{
+    font-weight: bold;
+    font-style: italic;
+    font-size:16px;
+    color:red;
+    background-color: slateblue;
+}
+*{
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    box-sizing:border-box;
+}
+body{
+   
+    margin:0;
+    padding:0;
+}
+.container{
+    margin-bottom:50px;
+    padding:20px 60px;
+    background-color: rgb(119, 115, 115);
+    border:20px groove darkblue;
+
+}
+.input-container{
+    height: 30px;
+    margin-bottom: 20px;
+    margin-top:25px;
+  
+}
+
+.input-container input{
+    height: 100%;
+    width:100%;
+    padding:2px 20px;
+    border-radius: 8px;
+    outline: none;
+    border:none;
+
+}
+.input-container input:focus{
+    box-shadow:0 0 8px 4px red;
+}
+.button-container{
+    display:flex;
+    width:100%;
+    justify-content: flex-end;
+
+}
+.button-container button{
+    border:none;
+    padding:12px 18px;
+    margin:3px;
+    background: green;
+    color:rgb(211, 206, 206);
+    border-radius: 9px;
+}
+
+.button-container button:hover{
+    transform:scale(0.9);
+    box-shadow: 1px 1px 6px darkgray;
+}
+.button-container button:active{
+    transform:scale(0.7);
+    box-shadow: 1px 1px 2px darkgray;
+}
+.button-container button.hide{
+    display:none;
+}
+#matchNum{
+
+    margin-top:20px;
+    font-size:14px;
+    background:paleturquoise;
+    padding:10px 16px;
+    display:none;
+}
