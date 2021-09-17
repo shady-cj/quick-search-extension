@@ -1,18 +1,54 @@
+
+
+
+
+
+
+
+
 $(function(){
     // console.log($('.Name-el').contents().each(function(){
     //     if(this.nodeType === Node.ELEMENT_NODE){
     //         console.log(this)
     //     }}))
-    let regex,searched_word,numOfMatch =0;
-    let inpCon = $('.input-container').find('input')
-    let bodyEl = $("body").children().not("script,noscript,.container")
-    let cancel = $("#cancel")
-    let search = $('#search')
-    let matchInfo =  $('#matchNum')
-    $(inpCon).val('')
+    
+
+    chrome.tabs.query(
+        { active: true, windowId: chrome.windows.WINDOW_ID_CURRENT,currentWindow: true},
+        function(tabs) {
+            // const { id: tabId } = tabs[0].url;
+            // let code = `document.querySelector('h1')`;
+            let regex,searched_word,numOfMatch =0;
+            let inpCon = $('.input-container').find('input')
+            let bodyEl = $("body").children().not("script,noscript")
+            let cancel = $("#cancel")
+            let search = $('#search')
+            let matchInfo =  $('#matchNum')
+            $(inpCon).val('')
+
+
+
+
+
+    
+            chrome.tabs.executeScript(null, { file: './jquery.js' }, () => { 
+                $(search).click(function(){
+                    chrome.tabs.executeScript(null, { file: './search.js' }, () => console.log('code injected'))
+
+                })
+
+                $(cancel).click(function(){
+
+                    chrome.tabs.executeScript(null, { file: './cancelsearch.js' }, () => console.log('code injected'))
+
+                })
+            });
+        });
+     
+/* 
 
     $(cancel).click(function(){
-        $(this).addClass('hide')
+        $(cancel).addClass('hide')
         $(search).removeClass('hide')
         $(inpCon).val('')
         numOfMatch = 0
@@ -29,7 +65,7 @@ $(function(){
  
     $(search).click(function(){
         if ($(inpCon).val().length ){
-            $(this).addClass('hide')
+            $(search).addClass('hide')
             $(cancel).removeClass('hide')
             getEachChildEl(bodyEl)
             let matchText;
@@ -131,5 +167,5 @@ $(function(){
         }
 
     }
-
+ */
 })
