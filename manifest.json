@@ -1,0 +1,11 @@
+{
+
+    "manifest_version":3,
+    "version":"1.0",
+    "name":"QUICK SEARCH",
+    "description":"quick search keywords on any page",
+    "action":{
+        "default_popup":"interface.html",
+        "default_icon":"interface.png"
+    }
+}
