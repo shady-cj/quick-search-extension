@@ -1,0 +1,9 @@
+.target{
+    font-weight: bold;
+    font-style: italic;
+    display:inline-block;
+    padding:4px;
+    color:red;
+    border-radius: 6px;
+    background-color: slateblue;
+}

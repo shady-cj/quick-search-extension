@@ -1,28 +1,38 @@
-   
-$(function(){   
-   if ($(inpCon).val().length ){
-        $(search).addClass('hide')
-        $(cancel).removeClass('hide')
+
+$(function(){ 
+    
+
+
+    let regex,searched_word,matchText;
+    let bodyEl = $("body").children().not("script,noscript,style")
+    
+    chrome.storage.local.get("searchWord", function (retrieved_data){
+        searched_word = retrieved_data.searchWord
         getEachChildEl(bodyEl)
-        let matchText;
-        if (numOfMatch > 1){
-            matchText=`There are ${numOfMatch} matches found on this page`
+        let numOfMatch2 = $(".target").length
+        if (numOfMatch2 > 1){
+            matchText=`There are ${numOfMatch2} matches found on this page`
         
-        }else if(numOfMatch === 1){
-            matchText = `There is just ${numOfMatch} match found on this page`
+        }else if(numOfMatch2 === 1){
+            matchText = `There is just ${numOfMatch2} match found on this page`
         }else{
             matchText = `There are no matches found on this page`
         }
+        chrome.storage.local.set({
+            matchText : matchText
+        }, () => {
+            console.log(matchText)
+            console.log(numOfMatch2)
+            console.log("stored")
+    
+        })
+    });  
 
-        $(matchInfo).text(matchText)
-
-        $(matchInfo).show()
-    }
 
     function getEachChildEl(mainEl){
 
-        searched_word = $(inpCon).val()
         regex = new RegExp(searched_word,"gi")
+
         
         $.each(mainEl,function(index,El){
 
@@ -62,14 +72,12 @@ $(function(){
         let replacedText = $(clonedText).text().replaceAll(regex,`<span class='target'>${searched_word}</span>`)
         
         if (matches !== null){
-            numOfMatch += matches.length
             if (matches.length === 1){
                 replacedText = $(clonedText).text().replaceAll(regex,`<span class='target'>${matches[0]}</span>`)
             }else{
                 let reconText = '';
                 let ind = 0 ;
                 let prev =0;
-                console.log(matches)
                 $(matches).each(function(){
                     
                     let newReg = new RegExp(`${this}`,'i')

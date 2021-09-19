@@ -3,13 +3,29 @@
     "manifest_version":3,
     "version":"1.0",
     "name":"QUICK SEARCH",
-    "description":"quick search keywords on any page",
+    "description":"quick search keywords on any page in no time",
     "action":{
         "default_popup":"interface.html",
-        "default_icon":"interface.png"
+        "default_icon":{
+
+            "16": "interface16.png",
+            "32": "interface32.png",
+            "48": "interface48.png",
+            "128": "interface128.png"
+        }
+    },
+    "background": {
+        "service_worker": "background.js"
     },
     "permissions": [
         "activeTab",
-        "tabs"
-        ]
+        "tabs",
+        "scripting",
+        "storage"
+    ],
+
+    "host_permissions": [
+        "https://*.google.com/",
+        "https://www.google.com/*"
+    ]
 }
