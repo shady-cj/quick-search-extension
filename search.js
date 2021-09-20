@@ -21,8 +21,6 @@ $(function(){
         chrome.storage.local.set({
             matchText : matchText
         }, () => {
-            console.log(matchText)
-            console.log(numOfMatch2)
             console.log("stored")
     
         })

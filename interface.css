@@ -69,3 +69,34 @@ body{
     padding:10px 16px;
     display:none;
 }
+
+#activated{
+    margin:10px 0 15px 0;
+    font-size:14px;
+    text-align:center;
+    background-color:green;
+    color:white;
+    padding:12px 16px;
+    display:none;
+}
+
+.animateactivate{
+    animation:slideup 0.6s ease-in-out;
+    animation-iteration-count:1;
+    animation-fill-mode:forwards;
+
+}
+
+@keyframes slideup{
+
+    from{
+        height:100%;
+
+    }
+    to {
+        height: 0;
+        padding:0;
+        font-size:0px;
+    }
+}
+

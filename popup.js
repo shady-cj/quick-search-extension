@@ -1,8 +1,30 @@
 let searchBtn = document.querySelector("#search");
+let activatedCon =document.getElementById("activated")
 let cancelBtn =document.querySelector("#cancel");
 let inpCon = document.querySelector(".input-container input");
 let matchInfo = document.querySelector("#matchNum")
 inpCon.value = ""
+
+
+console.log('popupjs')
+chrome.storage.onChanged.addListener(function (changes, namespace){
+    for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+        if (key === "activated" && newValue === true ){
+            activatedCon.style.display = "block"
+            inpCon.addEventListener("keyup", function(){
+                activatedCon.classList.add("animateactivate")
+                activatedCon.onanimationend = function(){
+                    this.style.display = "none"
+                    activatedCon.classList.remove("animateactivate")
+                    
+                }
+
+            })
+        }
+    }
+})
+
+
 searchBtn.addEventListener('click',function(){
     let searchWord = inpCon.value;
     let searchWordLen = inpCon.value.length;
@@ -15,7 +37,7 @@ searchBtn.addEventListener('click',function(){
         }, response => {
 
             if (!chrome.runtime.lastError) {
-                console.log("worked")
+    
                 if (response.message){
 
 
