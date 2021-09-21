@@ -1,5 +1,3 @@
-console.log("background")
-
 // browser.tabs.onActiveChanged.addListener(listener)
 async function getTab() {
     let queryOptions = { active: true, currentWindow: true };
@@ -8,7 +6,10 @@ async function getTab() {
   }
 chrome.tabs.onActivated.addListener(function(activeInfo){
     tabId = activeInfo.tabId
-   
+    chrome.storage.local.set({
+        id:tabId,
+    })
+  
     
     getTab()
     .then(url => {
@@ -24,11 +25,20 @@ let searchWord,matchText;
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status === 'complete' && /^http/.test(tab.url)) {
+
+        chrome.storage.local.remove(`tabData${tabId}`)
+    
+        
         loadInfos(tabId)
     }
 });
     
+
+
+
 function loadInfos(tabId){
+
+
     chrome.storage.local.set({
         activated: false
     })
@@ -49,7 +59,7 @@ function loadInfos(tabId){
             activated: true
         }, () => {
         })
-    }, 2000)
+    }, 3000)
    
 
     chrome.scripting.insertCSS({
@@ -75,7 +85,7 @@ function loadInfos(tabId){
                             files:["./jquery.js","./search.js"],
                         })
                             .then(() => {
-                                console.log("INJECTED THE FOREGROUND SCRIPT.");
+                                console.log("EXECUTED THE FOREGROUND SCRIPT.");
                                 
                         
                                 chrome.storage.onChanged.addListener(function (changes, namespace){
@@ -109,8 +119,6 @@ function loadInfos(tabId){
                 files:["./jquery.js","./cancelsearch.js"],
             })
                 .then(() => {
-                    console.log("i reached here too ")
-
                     sendResponse({message:"success"})
                 })
                 .catch(err => console.log(err));
