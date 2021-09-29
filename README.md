@@ -1,0 +1,3 @@
+# quick-search-extension
+
+This project is a chrome extension aimed at making keyword searches through webpages...
