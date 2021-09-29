@@ -13,8 +13,12 @@ chrome.storage.local.get("id", function(tab){
             searchBtn.classList.add('hide')
             cancelBtn.classList.remove('hide')
             inpCon.value= currentTabData?.searchWord
-            matchInfo.style.display = "block"
-            matchInfo.textContent = currentTabData?.matches
+            if (currentTabData.matches || currentTabData.matches !== undefined){
+
+                matchInfo.style.display = "block"
+                matchInfo.textContent = currentTabData.matches
+            }
+        
             cancelListener()
             
 
@@ -30,8 +34,7 @@ cancelListener()
 
 chrome.storage.local.get("activated",function(data){
     if (data.activated){
-        searchListener()
-       
+        showActive()
     }
 })
 
@@ -42,23 +45,26 @@ chrome.storage.local.get("activated",function(data){
 chrome.storage.onChanged.addListener(function (changes, namespace){
     for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
         if (key === "activated" && newValue === true ){
-            activatedCon.style.display = "block"
-            inpCon.addEventListener("keyup", function(){
-                activatedCon.classList.add("animateactivate")
-                activatedCon.onanimationend = function(){
-                    this.style.display = "none"
-                    activatedCon.classList.remove("animateactivate")
-                    
-                }
 
-
-                searchListener()
-            })
-
+            showActive()
 
         }
     }
 })
+
+function showActive(){
+    activatedCon.style.display = "block"
+    inpCon.addEventListener("keyup", function(){
+        activatedCon.classList.add("animateactivate")
+        activatedCon.onanimationend = function(){
+            this.style.display = "none"
+            activatedCon.classList.remove("animateactivate")
+            searchListener()
+        }
+    })
+
+}
+
 
 function cancelListener(){
     cancelBtn.addEventListener('click',function(){
@@ -73,15 +79,8 @@ function cancelListener(){
       
     
         inpCon.value = ""
-        chrome.runtime.sendMessage({ 
-            message: "cancel",
-        }, response => {
-            if (response){
-    
-                console.log("success")
-            }
-    
-        })
+        sendCancel()
+       
         // numOfMatch = 0
         matchInfo.textContent =''
         matchInfo.style.display = "none"
@@ -107,36 +106,64 @@ function searchListener(){
                 let obj = {}
                 obj[tabIdinfo] =  {onSession : true, searchWord:searchWord} 
                 chrome.storage.local.set(obj)
+                sendMsg(searchWord,tabIdinfo)
             })
-          
-            chrome.runtime.sendMessage({ 
-                message: "searchWord",
-                payload: searchWord
-            }, response => {
-                
-    
-                if (!chrome.runtime.lastError) {
-        
-                    if (response.message){
-    
-    
-                        matchInfo.textContent= response.payload
-                        matchInfo.style.display = "block"
-                        chrome.storage.local.get(tabIdinfo, function(entry){
-                            let dataObj = entry[tabIdinfo]
-                            dataObj["matches"] = response.payload                    
-                            chrome.storage.local.set(entry)
-                        })
-                    }
-                    // message processing code goes here
-                 } else {
-                   // error handling code goes here
-                   console.log("got an error")
-                 }
-     
             
-            })
+           
+
     
         }
+    })
+}
+
+
+function sendMsg(searchWord,tabIdinfo){
+    chrome.runtime.sendMessage({ 
+        message: "searchWord",
+        payload: searchWord
+    }, response => {
+        
+
+        if (!chrome.runtime.lastError) {
+
+            if (response.message){
+
+
+                matchInfo.textContent= response.payload
+                matchInfo.style.display = "block"
+                chrome.storage.local.get(tabIdinfo, function(entry){
+                    let dataObj = entry[tabIdinfo]
+                    dataObj["matches"] = response.payload 
+                    chrome.storage.local.set(entry)
+                })
+            }
+            // message processing code goes here
+         } else {
+           // error handling code goes here
+           setTimeout(function(){
+               sendMsg(searchWord,tabIdinfo)
+            },2000)
+         }
+
+    
+    })
+}
+
+
+function sendCancel(){
+    chrome.runtime.sendMessage({ 
+        message: "cancel",
+    }, response => {
+        if(!chrome.runtime.lastError){
+
+            if (response){
+
+                console.log("success")
+            }
+        }else{
+            setTimeout(sendCancel,2000)
+        }
+       
+
     })
 }

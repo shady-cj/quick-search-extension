@@ -1,10 +1,8 @@
 
 $(function(){ 
-    
-
 
     let regex,searched_word,matchText;
-    let bodyEl = $("body").children().not("script,noscript,style")
+    let bodyEl = $("body").children().not("script,noscript,style,svg")
     
     chrome.storage.local.get("searchWord", function (retrieved_data){
         searched_word = retrieved_data.searchWord
@@ -18,13 +16,23 @@ $(function(){
         }else{
             matchText = `There are no matches found on this page`
         }
-        chrome.storage.local.set({
-            matchText : matchText
-        }, () => {
-            console.log("stored")
-    
-        })
+        sendMatchText()
     });  
+    
+    function sendMatchText(){
+        console.log('matchtext here',matchText)
+        chrome.runtime.sendMessage({ 
+            message: "matchText",
+            payload: matchText
+        }, response => {
+            if (!chrome.runtime.lastError) {
+                console.log(response.message)
+            }else{
+                setTimeout(sendMatchText,2500)
+            }
+        }
+        )
+    }
 
 
     function getEachChildEl(mainEl){

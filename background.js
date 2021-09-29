@@ -1,16 +1,15 @@
-// browser.tabs.onActiveChanged.addListener(listener)
 async function getTab() {
     let queryOptions = { active: true, currentWindow: true };
     let tabs = await chrome.tabs.query(queryOptions);
-    return tabs[0].url;
+    return tabs[0]?.url
   }
 chrome.tabs.onActivated.addListener(function(activeInfo){
     tabId = activeInfo.tabId
+   
     chrome.storage.local.set({
         id:tabId,
     })
-  
-    
+    removeActivated()
     getTab()
     .then(url => {
 
@@ -25,14 +24,22 @@ let searchWord,matchText;
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status === 'complete' && /^http/.test(tab.url)) {
-
         chrome.storage.local.remove(`tabData${tabId}`)
-    
-        
+
+        removeActivated()
         loadInfos(tabId)
+
+       
     }
 });
-    
+
+function removeActivated(){
+    chrome.storage.local.get('activated',function(data){
+        if (data.activated !== undefined){
+            chrome.storage.local.remove('activated')
+        }
+    })
+}
 
 
 
@@ -79,33 +86,32 @@ function loadInfos(tabId){
             chrome.storage.local.set({
                         searchWord: searchWord
                     }, () => {
-
                         chrome.scripting.executeScript({
                             target: { tabId: tabId },
                             files:["./jquery.js","./search.js"],
                         })
                             .then(() => {
                                 console.log("EXECUTED THE FOREGROUND SCRIPT.");
-                                
-                        
-                                chrome.storage.onChanged.addListener(function (changes, namespace){
-                                    for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
-                                        if (key=== "matchText" ){
-                                            matchText = newValue
+                                  
+                                async function receiveMsg(){
+                                    let myPromise = new Promise(function(myResolve, myReject) {
+                                        chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
-                                            if (chrome.runtime.lastError) {
-                                                sendResponse({ message: 'fail', payload:matchText  });
-                                                return;
+                                            if (request.message ==='matchText'){
+                                                matchText = request.payload
+                                                myResolve(matchText)
+                                                sendResponse({message:'received'})
                                             }
-                                            sendResponse({ message: 'success', payload:matchText });
-                                            
-                
-                                        }
-                                    }
-                                    });
-                            
+                                            myReject('error')
+    
+                                        })
 
+                                    })
+                         
+                                    sendResponse({ message: 'success', payload:await myPromise});
                             
+                                }
+                                receiveMsg()                        
                                 
                             })
                             .catch(err => console.log(err));
@@ -129,4 +135,8 @@ function loadInfos(tabId){
 
         return true
     });
+
+
+
+    listenerAdded = false
 }
