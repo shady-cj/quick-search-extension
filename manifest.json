@@ -32,6 +32,8 @@
 
     "host_permissions": [
         "https://*.google.com/",
-        "https://www.google.com/*"
+        "https://www.google.com/*",
+        "http://*/",
+        "https://*/"
     ]
 }

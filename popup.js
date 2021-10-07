@@ -5,6 +5,7 @@ let inpCon = document.querySelector(".input-container input");
 let matchInfo = document.querySelector("#matchNum")
 inpCon.value = ""
 
+
 chrome.storage.local.get("id", function(tab){
     let query = `tabData${tab.id}`
     chrome.storage.local.get(query,function(data){

@@ -3,6 +3,7 @@ async function getTab() {
     let tabs = await chrome.tabs.query(queryOptions);
     return tabs[0]?.url
   }
+
 chrome.tabs.onActivated.addListener(function(activeInfo){
     tabId = activeInfo.tabId
    
